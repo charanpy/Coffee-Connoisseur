@@ -21,16 +21,52 @@ const CoffeeStore = (props) => {
 
   const id = router.query.id;
 
+  const handleCreateCoffeeStore = async (coffeeStore) => {
+    try {
+      const {
+        fsq_id: id,
+        name,
+        address,
+        neighborhood,
+        voting,
+        imgUrl,
+      } = coffeeStore;
+      const response = await fetch('/api/createCoffeeStore', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: `${id}`,
+          name,
+          address: address || '',
+          neighborhood: neighborhood?.length ? neighborhood.join('') : '',
+          voting,
+          imgUrl,
+        }),
+      });
+
+      const dbCoffeeStore = await response.json();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
+    if (!props.coffeeStore) return;
     if (isEmpty(props.coffeeStore)) {
       const findStoreById = coffeeStore.find(
         (store) => store.fsq_id.toString() === id
       );
-      if (coffeeStore.length) setStore(findStoreById);
+      if (coffeeStore) {
+        setStore(findStoreById);
+        handleCreateCoffeeStore(findStoreById);
+      }
     } else {
       setStore(props.coffeeStore);
+      handleCreateCoffeeStore(props.coffeeStore);
     }
-  }, [id]);
+  }, [id, props, props.coffeeStore]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;

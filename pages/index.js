@@ -24,7 +24,11 @@ export default function Home({ coffeeStores, data }) {
   const getCoffeeStores = useCallback(async () => {
     try {
       if (!latLong) return;
-      const fetchedCoffeeStore = await fetchCoffeeStores(latLong);
+      // const fetchedCoffeeStore = await fetchCoffeeStores(latLong);
+      const res = await fetch(
+        `/api/getCoffeeStoresByLocation?latLong=${latLong}`
+      );
+      const fetchedCoffeeStore = await res.json();
       dispatch({
         type: ACTION_TYPES.SET_COFFEE_STORES,
         payload: {
