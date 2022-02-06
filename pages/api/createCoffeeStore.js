@@ -1,4 +1,4 @@
-import { table, getRecords } from '../../lib/airtable';
+import { table, getRecords, findRecordByFilter } from '../../lib/airtable';
 
 const createCoffeeStore = async (req, res) => {
   try {
@@ -10,14 +10,9 @@ const createCoffeeStore = async (req, res) => {
 
     if (!id) return res.status(400).json({ message: 'Id is required' });
 
-    const findCoffeeStoreRecord = await table
-      .select({
-        filterByFormula: `id="${id}"`,
-      })
-      .firstPage();
+    const records = await findRecordByFilter(id);
 
-    if (findCoffeeStoreRecord.length) {
-      const records = getRecords(findCoffeeStoreRecord);
+    if (records.length) {
       return res.status(200).json({
         coffeeStore: records,
       });
